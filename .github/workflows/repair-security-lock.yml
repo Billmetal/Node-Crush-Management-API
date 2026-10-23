@@ -15,8 +15,9 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - name: Generate and verify installation without install scripts
+      - name: Rebuild lockfile and verify installation without install scripts
         run: |
+          rm -- package-lock.json
           if (npm install --package-lock-only --ignore-scripts && npm ci --ignore-scripts) > npm-lock.log 2>&1; then
             cat npm-lock.log
           else
