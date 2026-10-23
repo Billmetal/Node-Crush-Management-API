@@ -15,22 +15,20 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - name: Regenerate lockfile without install scripts
+      - name: Generate and verify installation without install scripts
         run: |
-          if npm install --package-lock-only --ignore-scripts > npm-lock.log 2>&1; then
+          if (npm install --package-lock-only --ignore-scripts && npm ci --ignore-scripts) > npm-lock.log 2>&1; then
             cat npm-lock.log
           else
             cat npm-lock.log
             node <<'NODE'
           const fs = require('node:fs');
-          const text = fs.readFileSync('npm-lock.log', 'utf8').split('\n').filter(line => /npm (error|ERR!)/i.test(line)).slice(-20).join('\n') || 'npm lockfile generation failed; inspect job logs';
+          const text = fs.readFileSync('npm-lock.log', 'utf8').split('\n').filter(line => /npm (error|ERR!)/i.test(line)).slice(-20).join('\n') || 'npm generation or installation validation failed; inspect job logs';
           const escaped = text.replace(/%/g, '%25').replace(/\r/g, '%0D').replace(/\n/g, '%0A');
           console.log('::error::' + escaped);
           NODE
             exit 1
           fi
-      - name: Verify reproducible installation without install scripts
-        run: npm ci --ignore-scripts
       - name: Verify body-parser versions
         run: |
           node <<'NODE'
