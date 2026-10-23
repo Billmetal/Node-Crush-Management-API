@@ -2,7 +2,7 @@ name: Repair security lockfile
 on:
   push:
     branches: [fix/dependabot-body-parser-security]
-    paths: [.github/workflows/repair-security-lock.yml]
+    paths: [.github/workflows/repair-security-lock.yml, package.json]
 permissions:
   contents: write
 jobs:
